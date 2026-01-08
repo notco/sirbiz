@@ -1,6 +1,8 @@
 defmodule SirbizWeb.Router do
   use SirbizWeb, :router
 
+  import SirbizWeb.UserAuth
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -8,6 +10,7 @@ defmodule SirbizWeb.Router do
     plug :put_root_layout, html: {SirbizWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :fetch_current_scope_for_user
   end
 
   pipeline :api do
@@ -40,5 +43,43 @@ defmodule SirbizWeb.Router do
       live_dashboard "/dashboard", metrics: SirbizWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
+  end
+
+  ## Authentication routes
+
+  scope "/", SirbizWeb do
+    pipe_through [:browser, :require_authenticated_user]
+
+    live_session :require_authenticated_user,
+      on_mount: [{SirbizWeb.UserAuth, :require_authenticated}] do
+      live "/users/settings", UserLive.Settings, :edit
+      live "/users/settings/confirm-email/:token", UserLive.Settings, :confirm_email
+    end
+
+    post "/users/update-password", UserSessionController, :update_password
+  end
+
+  scope "/", SirbizWeb do
+    pipe_through [:browser]
+
+    live_session :current_user,
+      on_mount: [{SirbizWeb.UserAuth, :mount_current_scope}] do
+      live "/users/register", UserLive.Registration, :new
+      live "/users/log-in", UserLive.Login, :new
+      live "/users/log-in/:token", UserLive.Confirmation, :new
+
+      live "/profiles", ProfileLive.Index, :index
+      live "/profiles/new", ProfileLive.Form, :new
+      live "/profiles/:id", ProfileLive.Show, :show
+      live "/profiles/:id/edit", ProfileLive.Form, :edit
+
+      live "/services", ServiceLive.Index, :index
+      live "/services/new", ServiceLive.Form, :new
+      live "/services/:id", ServiceLive.Show, :show
+      live "/services/:id/edit", ServiceLive.Form, :edit
+    end
+
+    post "/users/log-in", UserSessionController, :create
+    delete "/users/log-out", UserSessionController, :delete
   end
 end
