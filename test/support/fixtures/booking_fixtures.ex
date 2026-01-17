@@ -19,4 +19,25 @@ defmodule Sirbiz.BookingFixtures do
     {:ok, service} = Sirbiz.Booking.create_service(scope, attrs)
     service
   end
+
+  @doc """
+  Generate a availability.
+  """
+  def availability_fixture(attrs \\ %{}) do
+    {:ok, availability} =
+      attrs
+      |> Enum.into(%{
+        activated_at: ~U[2026-01-16 15:24:00Z],
+        day_of_week: 42,
+        deactivated_at: ~U[2026-01-16 15:24:00Z],
+        deleted_at: ~U[2026-01-16 15:24:00Z],
+        end_time: ~T[14:00:00],
+        is_recurring: true,
+        specific_date: ~D[2026-01-16],
+        start_time: ~T[14:00:00]
+      })
+      |> Sirbiz.Booking.create_availability()
+
+    availability
+  end
 end

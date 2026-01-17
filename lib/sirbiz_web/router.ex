@@ -77,6 +77,16 @@ defmodule SirbizWeb.Router do
       live "/services/new", ServiceLive.Form, :new
       live "/services/:id", ServiceLive.Show, :show
       live "/services/:id/edit", ServiceLive.Form, :edit
+
+      live "/venues", VenueLive.Index, :index
+      live "/venues/new", VenueLive.Form, :new
+      live "/venues/:id", VenueLive.Show, :show
+      live "/venues/:id/edit", VenueLive.Form, :edit
+
+      live "/availabilities", AvailabilityLive.Index, :index
+      live "/availabilities/new", AvailabilityLive.Form, :new
+      live "/availabilities/:id", AvailabilityLive.Show, :show
+      live "/availabilities/:id/edit", AvailabilityLive.Form, :edit
     end
 
     post "/users/log-in", UserSessionController, :create

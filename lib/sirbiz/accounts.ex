@@ -76,7 +76,6 @@ defmodule Sirbiz.Accounts do
 
   """
   def register_user(attrs) do
-    IO.inspect(attrs, label: "attrs")
     Ecto.Multi.new()
     |> Ecto.Multi.insert(:user, fn _ -> %User{} |> User.email_changeset(attrs) end)
     |> Ecto.Multi.insert(:profile, fn %{user: user} ->

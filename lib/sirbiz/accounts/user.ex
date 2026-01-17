@@ -2,15 +2,20 @@ defmodule Sirbiz.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @roles ~w(super_admin admin member external)
+
   schema "users" do
     field :email, :string
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
     field :confirmed_at, :utc_datetime
     field :authenticated_at, :utc_datetime, virtual: true
+    field :role, :string, default: "external"
 
     timestamps(type: :utc_datetime)
   end
+
+  def roles, do: @roles
 
   @doc """
   A user changeset for registering or changing the email.
@@ -25,8 +30,9 @@ defmodule Sirbiz.Accounts.User do
   """
   def email_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email])
+    |> cast(attrs, [:email, :role])
     |> validate_email(opts)
+    |> validate_role()
   end
 
   defp validate_email(changeset, opts) do
@@ -73,9 +79,10 @@ defmodule Sirbiz.Accounts.User do
   """
   def password_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:password])
+    |> cast(attrs, [:password, :role])
     |> validate_confirmation(:password, message: "does not match password")
     |> validate_password(opts)
+    |> validate_role()
   end
 
   defp validate_password(changeset, opts) do
@@ -128,5 +135,10 @@ defmodule Sirbiz.Accounts.User do
   def valid_password?(_, _) do
     Bcrypt.no_user_verify()
     false
+  end
+
+  defp validate_role(changeset) do
+    changeset
+    |> validate_inclusion(:role, @roles, message: "must be one of: #{Enum.join(@roles, ", ")}")
   end
 end

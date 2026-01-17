@@ -15,7 +15,7 @@ defmodule Sirbiz.CRM.Profile do
   @doc false
   def changeset(profile, attrs) do
     profile
-    |> cast(attrs, [:first_name, :last_name, :phone, :birthdate])
-    |> validate_required([:first_name, :last_name])
+    |> cast(attrs, [:user_id, :first_name, :last_name, :phone, :birthdate])
+    |> validate_required([:user_id, :first_name, :last_name])
   end
 end

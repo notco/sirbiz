@@ -94,4 +94,72 @@ defmodule Sirbiz.BookingTest do
       assert %Ecto.Changeset{} = Booking.change_service(scope, service)
     end
   end
+
+  describe "availabilities" do
+    alias Sirbiz.Booking.Availability
+
+    import Sirbiz.BookingFixtures
+
+    @invalid_attrs %{day_of_week: nil, start_time: nil, end_time: nil, is_recurring: nil, specific_date: nil, deleted_at: nil, activated_at: nil, deactivated_at: nil}
+
+    test "list_availabilities/0 returns all availabilities" do
+      availability = availability_fixture()
+      assert Booking.list_availabilities() == [availability]
+    end
+
+    test "get_availability!/1 returns the availability with given id" do
+      availability = availability_fixture()
+      assert Booking.get_availability!(availability.id) == availability
+    end
+
+    test "create_availability/1 with valid data creates a availability" do
+      valid_attrs = %{day_of_week: 42, start_time: ~T[14:00:00], end_time: ~T[14:00:00], is_recurring: true, specific_date: ~D[2026-01-16], deleted_at: ~U[2026-01-16 15:24:00Z], activated_at: ~U[2026-01-16 15:24:00Z], deactivated_at: ~U[2026-01-16 15:24:00Z]}
+
+      assert {:ok, %Availability{} = availability} = Booking.create_availability(valid_attrs)
+      assert availability.day_of_week == 42
+      assert availability.start_time == ~T[14:00:00]
+      assert availability.end_time == ~T[14:00:00]
+      assert availability.is_recurring == true
+      assert availability.specific_date == ~D[2026-01-16]
+      assert availability.deleted_at == ~U[2026-01-16 15:24:00Z]
+      assert availability.activated_at == ~U[2026-01-16 15:24:00Z]
+      assert availability.deactivated_at == ~U[2026-01-16 15:24:00Z]
+    end
+
+    test "create_availability/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Booking.create_availability(@invalid_attrs)
+    end
+
+    test "update_availability/2 with valid data updates the availability" do
+      availability = availability_fixture()
+      update_attrs = %{day_of_week: 43, start_time: ~T[15:01:01], end_time: ~T[15:01:01], is_recurring: false, specific_date: ~D[2026-01-17], deleted_at: ~U[2026-01-17 15:24:00Z], activated_at: ~U[2026-01-17 15:24:00Z], deactivated_at: ~U[2026-01-17 15:24:00Z]}
+
+      assert {:ok, %Availability{} = availability} = Booking.update_availability(availability, update_attrs)
+      assert availability.day_of_week == 43
+      assert availability.start_time == ~T[15:01:01]
+      assert availability.end_time == ~T[15:01:01]
+      assert availability.is_recurring == false
+      assert availability.specific_date == ~D[2026-01-17]
+      assert availability.deleted_at == ~U[2026-01-17 15:24:00Z]
+      assert availability.activated_at == ~U[2026-01-17 15:24:00Z]
+      assert availability.deactivated_at == ~U[2026-01-17 15:24:00Z]
+    end
+
+    test "update_availability/2 with invalid data returns error changeset" do
+      availability = availability_fixture()
+      assert {:error, %Ecto.Changeset{}} = Booking.update_availability(availability, @invalid_attrs)
+      assert availability == Booking.get_availability!(availability.id)
+    end
+
+    test "delete_availability/1 deletes the availability" do
+      availability = availability_fixture()
+      assert {:ok, %Availability{}} = Booking.delete_availability(availability)
+      assert_raise Ecto.NoResultsError, fn -> Booking.get_availability!(availability.id) end
+    end
+
+    test "change_availability/1 returns a availability changeset" do
+      availability = availability_fixture()
+      assert %Ecto.Changeset{} = Booking.change_availability(availability)
+    end
+  end
 end

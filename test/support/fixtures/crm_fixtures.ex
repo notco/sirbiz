@@ -20,4 +20,21 @@ defmodule Sirbiz.CRMFixtures do
 
     profile
   end
+
+  @doc """
+  Generate a venue.
+  """
+  def venue_fixture(attrs \\ %{}) do
+    {:ok, venue} =
+      attrs
+      |> Enum.into(%{
+        address: "some address",
+        is_active: true,
+        name: "some name",
+        phone: "some phone"
+      })
+      |> Sirbiz.CRM.create_venue()
+
+    venue
+  end
 end

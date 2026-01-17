@@ -17,8 +17,9 @@ defmodule Sirbiz.Accounts.Scope do
   """
 
   alias Sirbiz.Accounts.User
+  alias Sirbiz.CRM
 
-  defstruct user: nil
+  defstruct user: nil, profile: nil
 
   @doc """
   Creates a scope for the given user.
@@ -26,7 +27,8 @@ defmodule Sirbiz.Accounts.Scope do
   Returns nil if no user is given.
   """
   def for_user(%User{} = user) do
-    %__MODULE__{user: user}
+    profile = CRM.get_profile_by_user_id(user.id)
+    %__MODULE__{user: user, profile: profile}
   end
 
   def for_user(nil), do: nil
